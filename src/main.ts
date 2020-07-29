@@ -12,8 +12,11 @@ Vue.use(IconsPlugin);
 Vue.use(VueRouter);
 
 const router = new VueRouter({
+    mode: 'history',
     routes,
 });
+
+router.replace({ path: '/login' })
 
 new Vue({
   store,

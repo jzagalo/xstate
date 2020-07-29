@@ -40,7 +40,7 @@ export default class Login extends Vue {
   private doLogin() {
     const username = this.formData.username;
     const password = this.formData.password;
-    this.loginService.send('LOGIN', {username, password });      
+    this.loginService.send('LOGIN', {username, password, router: this.$router });      
   } 
  
 }

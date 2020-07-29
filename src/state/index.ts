@@ -17,11 +17,13 @@ const cartMachine = Machine({
                     invoke: {
                         id: 'doLogin',
                         src: async (context, event) => { 
-                            const { username, password } = event;
+                            const { username, password, router } = event;
+                           
                             if(username !== 'hello' && password !== '123'){
                                 throw new Error('Wrong Username or Password');
-                            }
-                            return {username, password};
+                            } else {                                
+                                router.push("/");
+                            }                           
                         },
                         onDone: {
                             target: 'success',
@@ -42,7 +44,7 @@ const cartMachine = Machine({
             },
         },
     }, 
-    on: {
+    on:{
         LOGIN: {
             target: 'auth.started'
         }
