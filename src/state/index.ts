@@ -1,4 +1,5 @@
 import { Machine, interpret, assign } from "xstate";
+import { auth } from '@/state/auth.js';
 
 
 
@@ -11,44 +12,14 @@ const cartMachine = Machine({
     },
     states: {
         init: {},
-        auth: {
-            states: {
-                started: {
-                    invoke: {
-                        id: 'doLogin',
-                        src: async (context, event) => { 
-                            const { username, password, router } = event;
-                           
-                            if(username !== 'hello' && password !== '123'){
-                                throw new Error('Wrong Username or Password');
-                            } else {                                
-                                router.push("/");
-                            }                           
-                        },
-                        onDone: {
-                            target: 'success',
-                            actions: assign({ 
-                                user: (context, event) => event.data,
-                            }),
-                        },
-                        onError: {
-                            target: 'fail',
-                            actions: assign({  
-                                error: (context, event) => event.data,
-                            }),
-                        },
-                    },                    
-                },
-                success: {},
-                fail: {},
-            },
-        },
-    }, 
+        auth,
+    },    
     on:{
         LOGIN: {
             target: 'auth.started'
         }
-    }          
+    },
+           
 });
 
 
