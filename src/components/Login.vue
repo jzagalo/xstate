@@ -3,7 +3,7 @@
     <h1> Login </h1>
     <h3 style="color:red" v-if="current.matches('auth.fail')">
        {{ context.error }}
-    </h3> 
+    </h3>
     <div>
         <input type="text" placeholder="username" v-model="formData.username" />
     </div>
@@ -28,21 +28,20 @@ export default class Login extends Vue {
   private loginService = interpret(cartMachine);
   private current = cartMachine.initialState;
   private context = cartMachine.context;
-  
 
   private created() {
     this.loginService.onTransition(state => {
       this.current = state;
       this.context = state.context;
-    }).start(); 
-  }  
+    }).start();
+  }
 
   private doLogin() {
     const username = this.formData.username;
     const password = this.formData.password;
-    this.loginService.send('LOGIN', {username, password, router: this.$router });      
-  } 
- 
+    this.loginService.send('LOGIN', {username, password, router: this.$router });
+  }
+
 }
 </script>
 

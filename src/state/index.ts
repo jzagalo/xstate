@@ -1,19 +1,15 @@
-import { Machine, assign } from "xstate";
+import { Machine, assign, spawn } from "xstate";
 import { auth } from '@/state/auth.js';
+import { createStoryMachine } from '@/state/story.js';
 
 const storiesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 const getStoryDataUrl = (id: number) => `https://hacker-news.firebaseio.com/v0/item/${id}.json`;
 
-
 const fetchStories = async () => {
     const storyIds = await fetch(storiesUrl).then(r => r.json());
-    const topTenStories = await storyIds.slice(0,10).map((id: number) => getStoryDataUrl(id))
-    .map((url: string) => fetch(url).then(r => r.json()));
-    console.log({topTenStories});
-    return topTenStories;
+    return await Promise.all(storyIds.slice(0,10).map((id: number) => getStoryDataUrl(id))
+    .map((url: string) => fetch(url).then(r => r.json())));
 }
-
-
 
 const cartMachine = Machine({
     id: 'app',
@@ -22,6 +18,7 @@ const cartMachine = Machine({
         user: undefined,
         error: undefined,
         stories: [],
+        selectedStory: undefined,
     },
     states: {
         init: {},
@@ -49,16 +46,23 @@ const cartMachine = Machine({
                 },
                 success: {},
                 fail: {},
+                selected: {},
             },
         },
     },
-
     on: {
         LOGIN: {
-            target: 'auth.started'
+            target: 'auth.started',
         },
         LOAD_STORIES: {
             target: 'list.loading',
+        },
+        SELECT_STORY: {
+            target: 'list.selected',
+            actions: assign((context, event) => {
+                const newStoryMachine = spawn(createStoryMachine(event));
+                return { selectedStory: newStoryMachine }
+            }),
         },
     },
 });

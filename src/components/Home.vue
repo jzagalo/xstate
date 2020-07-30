@@ -5,10 +5,14 @@
         Loading ...
       </h2>
        <div style="{color: 'red'}" v-if="current.matches('list.fail')">
-        Error Loading Stories {{context.error.toString() }}
+          Error Loading Stories {{context.error.toString() }}
       </div>
-       <div v-if="current.matches('list.fail')">
-         {{context.stories }}
+       <div v-if="current.matches('list.success')">
+          <p v-for="story in context.stories"  :key="story.id">
+            <a  :href="story.url" >
+              {{ story.title}}
+            </a>
+          </p>
       </div>
   </div>
 </template>
@@ -25,15 +29,14 @@ export default class Home extends Vue {
   private current = cartMachine.initialState;
   private context = cartMachine.context;
 
-
-
   private created(){
     this.loadService.onTransition(state => {
        this.current = state;
        this.context = state.context;
     })
     .start();
-    this.loadService.send('LOAD_STORIES');  }
+    this.loadService.send('LOAD_STORIES');
+  }
 
 }
 </script>
